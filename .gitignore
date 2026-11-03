@@ -1,0 +1,3 @@
+uploads/donations/*
+!uploads/donations/.gitkeep
+uploads/.expiry_check
