@@ -1,8 +1,15 @@
 # SmartFood Rescue
+Project Context
+This project, SmartFood Rescue, has been developed as a semester project to apply the concepts learned in the course, including web development, database design and system analysis, to a real-world problem. It demonstrates the design and implementation of a complete, working web application from requirements to testing.
 
 A web application that connects food donors (restaurants, bakeries, hotels, grocery stores) with NGOs and charities, using volunteers to move surplus food before it expires.
 
 Built with **Core PHP 8 (no framework)**, **MySQL/MariaDB (PDO)**, **Bootstrap 5**, **Chart.js**, **Leaflet** and plain JavaScript. A small MVC-style structure keeps SQL, logic and HTML apart.
+
+#The problem it solves
+Restaurants, bakeries and hotels throw away edible food every day, while NGOs struggle to feed people. The gap is coordination: food expires within hours, there is no shared place to list it, nobody knows who will collect it, and there is no proof it reached anyone.
+
+SmartFood Rescue gives every party one place to list, request, approve, schedule, collect (verified by QR code) and report on surplus food.
 
 ## Features
 
@@ -88,7 +95,33 @@ smartfood-rescue/
   database/schema.sql  tables + seed data
   cron/expiry_check.php
 ```
+#Tech stack
+-Layer	Technology
+-Backend	Core PHP 8+, PDO (prepared statements)
+-Database	MySQL 5.7+ / MariaDB 10.4+ (InnoDB)
+-Frontend	HTML5, CSS3, JavaScript, Bootstrap 5.3, Bootstrap Icons
+-Charts	Chart.js 4
+-Maps	Leaflet 1.9 with OpenStreetMap tiles
+-QR	qrcode.js (generate), html5-qrcode (scan)
+-Server	Apache (XAMPP) with mod_rewrite
 
+#Security
+-Passwords stored with password_hash (bcrypt); never in plain text.
+-PDO prepared statements everywhere (SQL injection).
+-All output escaped with htmlspecialchars (XSS).
+-CSRF tokens on every POST form.
+-Session ID regenerated on login and logout; session cookie is HttpOnly and SameSite=Lax.
+-Role middleware and ownership checks on every protected page (for example, a donor cannot open another donor's donation).
+-Login throttling after 5 failed attempts.
+-Image uploads checked by real MIME type and size, renamed randomly, and uploads/ blocks PHP execution.
+-QR tokens are 32 random hex characters, single use, tied to one donor.
+-config/, includes/, models/, controllers/, views/, middleware/, database/, cron/ are denied direct web access by .htaccess.
+
+UI and design decisions
+Food-app look: warm orange-red primary, white cards on a light-grey canvas, large rounded corners, pill buttons.
+Phone first: a bottom tab bar (donors get a large "+" to post food). The sidebar appears on desktop.
+Low mental load: one "do this next" card per role on the dashboard, category tiles instead of dropdowns, a List and Map toggle, colour-coded time-left tags.
+Food emoji on listings and categories, chosen from the title (biryani, rice, bread, samosa and so on) with the category as a fallback
 ## Notes
 
 - **Pretty URLs** need `mod_rewrite` (on by default in XAMPP). If URLs 404, set `PRETTY_URLS` to `false` in `config/config.php`.
@@ -99,6 +132,3 @@ smartfood-rescue/
 - Set `MAP_DEFAULT` and `APP_TIMEZONE` in `config/config.php` for your city.
 - Security: prepared statements everywhere, `password_hash`, CSRF tokens on every POST, output escaping, image type checks, login throttling. Set `APP_ENV` to `production` when deploying.
 
-## Not included yet
-
-Partial-quantity splitting between several NGOs, changing your login email, and email/push notifications (alerts are in-app).
